@@ -47,7 +47,7 @@ set autoindent      " Copy indent from current line when starting a new line
                     " (typing <CR> in Insert mode or when using the "o" or "O"
                     " command).
  
-set textwidth=79    " Maximum width of text that is being inserted. A longer
+set textwidth=120    " Maximum width of text that is being inserted. A longer
                     " line will be broken after white space to get this width.
  
 set formatoptions=c,q,r,t " This is a sequence of letters which describes how
@@ -74,7 +74,7 @@ hi Normal guibg=NONE ctermbg=NONE
  
 set mouse=a         " Enable the use of the mouse.
 set number
-set clipboard=unnamed
+autocmd BufRead,BufNewFile *Jenkinsfile* set filetype=groovy
 ""COMMANDS
 command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
 ""PLUGINS
@@ -82,21 +82,22 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=/usr/share/vim/vimfiles/autoload/vundle.vim
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'preservim/nerdtree'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'scrooloose/syntastic'
+Plugin 'pearofducks/ansible-vim'
 Plugin 'vim-airline/vim-airline'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'hashivim/vim-terraform'
+Plugin 'dmerejkowsky/vim-ale'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-commentary'
 call vundle#end() " required
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
+let g:ansible_attribute_highlight = "ob"
+let g:ansible_unindent_after_newline = 1
+let g:ansible_extra_keywords_highlight = 1
 filetype plugin indent on
 syntax on
