@@ -14,6 +14,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Set leader key early
 vim.g.mapleader = ' '
+local opts = { noremap = true, silent = true }
 
 -- Lazy.nvim setup
 require("lazy").setup({
@@ -21,6 +22,37 @@ require("lazy").setup({
     -- ColorSchemes
     { 'aliqyan-21/darkvoid.nvim' },
     { 'EdenEast/nightfox.nvim' },
+
+    -- Lualine (Status Line Enhancement) - Plugin 1
+    {
+        'nvim-lualine/lualine.nvim',
+        event = "VimEnter",
+        dependencies = { 'nvim-tree/nvim-web-devicons', opt = true },
+        config = function()
+            require('lualine').setup({
+                options = { theme = 'carbonfox' }, -- Or any theme you prefer
+            })
+        end,
+    },
+
+    -- Telescope (Fuzzy Finder) - Plugin 2
+    {
+        'nvim-telescope/telescope.nvim',
+        cmd = 'Telescope',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require('telescope').setup({
+                defaults = {
+                    mappings = {
+                        i = {
+                            ["<C-n>"] = require('telescope.actions').move_selection_next,
+                            ["<C-p>"] = require('telescope.actions').move_selection_previous,
+                        },
+                    },
+                },
+            })
+        end,
+    },
 
     -- Git Integration
     { 'tpope/vim-fugitive', cmd = { 'Git', 'G' } },
@@ -53,7 +85,9 @@ require("lazy").setup({
                 config = function()
                     require("mason-lspconfig").setup({
                         ensure_installed = {
-                            "gopls", "pyright", "yamlls", "jdtls", "terraformls", "bashls", "jsonls", "helm_ls", "kotlin_language_server", "azure_pipelines_ls", "rust_analyzer"
+                            "gopls", "pyright", "yamlls", "jdtls", "terraformls",
+                            "bashls", "jsonls", "helm_ls", "kotlin_language_server",
+                            "azure_pipelines_ls", "rust_analyzer"
                         },
                         automatic_installation = true,
                     })
@@ -156,7 +190,8 @@ require("lazy").setup({
         config = function()
             require('nvim-treesitter.configs').setup {
                 ensure_installed = {
-                    "go", "python", "yaml", "json", "bash", "java", "terraform", "hcl", "kotlin", "helm", "rust"
+                    "go", "python", "yaml", "json", "bash", "java",
+                    "terraform", "hcl", "kotlin", "helm", "rust"
                 },
                 highlight = {
                     enable = true,
@@ -164,6 +199,104 @@ require("lazy").setup({
                 },
             }
         end
+    },
+
+    -- nvim-autopairs - Plugin 4
+    {
+        'windwp/nvim-autopairs',
+        event = "InsertEnter",
+        config = function()
+            require('nvim-autopairs').setup({})
+        end,
+    },
+
+    -- Comment.nvim - Plugin 5
+    {
+        'numToStr/Comment.nvim',
+        keys = { 'gc', 'gcc', 'gbc' },
+        config = function()
+            require('Comment').setup()
+        end,
+    },
+
+    -- indent-blankline.nvim - Plugin 6
+    {
+        'lukas-reineke/indent-blankline.nvim',
+        event = "BufReadPre",
+        config = function()
+            require("ibl").setup({
+                indent = {
+                    char = '│',
+                },
+                scope = {
+                    enabled = true,
+                },
+            })
+        end,
+    },
+    -- nvim-surround - Plugin 8
+    {
+        'kylechui/nvim-surround',
+        event = "BufReadPre",
+        config = function()
+            require('nvim-surround').setup({})
+        end,
+    },
+
+    -- which-key.nvim - Plugin 9
+    {
+        'folke/which-key.nvim',
+        event = "VimEnter",
+        config = function()
+            require('which-key').setup({})
+        end,
+    },
+
+    -- nvim-notify - Plugin 10
+    {
+        'rcarriga/nvim-notify',
+        event = "VimEnter",
+        config = function()
+            vim.notify = require("notify")
+        end,
+    },
+
+    -- project.nvim - Plugin 16
+    {
+        'ahmedkhalf/project.nvim',
+        event = "VimEnter",
+        config = function()
+            require('project_nvim').setup({})
+            require('telescope').load_extension('projects')
+        end,
+    },
+
+    -- nvim-colorizer.lua - Plugin 17
+    {
+        'norcalli/nvim-colorizer.lua',
+        event = "BufReadPre",
+        config = function()
+            require('colorizer').setup({})
+        end,
+    },
+
+    -- nvim-treehopper - Plugin 20
+    {
+        'mfussenegger/nvim-treehopper',
+        keys = { 'm', 'M' },
+        config = function()
+            vim.api.nvim_set_keymap('o', 'm', ":<C-U>lua require('tsht').nodes()<CR>", opts)
+            vim.api.nvim_set_keymap('x', 'm', ":lua require('tsht').nodes()<CR>", opts)
+        end,
+    },
+
+    -- leap.nvim - Plugin 24
+    {
+        'ggandor/leap.nvim',
+        keys = { 's', 'S' },
+        config = function()
+            require('leap').add_default_mappings()
+        end,
     },
 
     -- Markdown Preview
@@ -204,7 +337,7 @@ require("lazy").setup({
         cmd = "Neotree",
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "nvim-tree/nvim-web-devicons",
+            "nvim-tree/nvim-web-devicons", -- For file icons
             "MunifTanjim/nui.nvim",
         },
         config = function()
@@ -267,7 +400,7 @@ require("lazy").setup({
 
 -- Set ColorScheme
 vim.cmd [[colorscheme carbonfox]]
-
+vim.o.termguicolors = true
 -- Highlight the current line
 vim.wo.cursorline = true
 -- Enable syntax highlighting
@@ -276,6 +409,7 @@ vim.cmd('syntax on')
 -- Enable line numbers (relative and absolute)
 vim.wo.number = true
 vim.wo.relativenumber = false
+
 -- Set tab and indentation preferences
 vim.o.expandtab = true
 vim.o.tabstop = 4
@@ -294,6 +428,13 @@ vim.o.showmatch = true
 -- Always show the status line
 vim.o.laststatus = 2
 
+-- Use the system clipboard (delayed to avoid startup delay)
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        vim.o.clipboard = 'unnamedplus'
+    end
+})
+
 -- Improve search behavior
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -301,16 +442,15 @@ vim.o.incsearch = true
 vim.o.hlsearch = true
 
 -- Format the buffer
-vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.format()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.format()<CR>', opts)
 
 -- Keybindings for LSP diagnostics navigation
-vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap=true, silent=true })
-vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap=true, silent=true })
-vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap=true, silent=true })
-vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap=true, silent=true })
+vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
 
 -- Git keybindings with leader key and 'g' as Git prefix
-local opts = { noremap = true, silent = true }
 
 -- Git commands
 vim.api.nvim_set_keymap('n', '<leader>gs', ':G<CR>', opts)
@@ -329,7 +469,18 @@ vim.api.nvim_set_keymap('n', '<leader>gco', ':Git checkout ', { noremap = true }
 vim.api.nvim_set_keymap('n', '<leader>gd', ':G<CR>', opts)
 
 -- File Explorer
-vim.api.nvim_set_keymap('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>e', ':Neotree toggle<CR>', opts)
 -- Markdown preview
-vim.api.nvim_set_keymap('n', '<leader>md', ':Glow<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>md', ':Glow<CR>', opts)
+
+-- Telescope keybindings (added for Plugin 2)
+vim.api.nvim_set_keymap('n', '<leader>ff', ':Telescope find_files<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>fb', ':Telescope buffers<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>fp', ':Telescope projects<CR>', opts) -- For project.nvim
+
+-- Nvim-treehopper keybindings are set in its config
+-- Leap.nvim default mappings are set in its config
+
 
