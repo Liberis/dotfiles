@@ -1,57 +1,73 @@
 -- Initialize packer.nvim
+require('impatient')
 require('packer').startup(function(use)
+    use 'lewis6991/impatient.nvim'
     -- Packer manages itself
     use 'wbthomason/packer.nvim'
-    -- ColorScheme
-    use 'aliqyan-21/darkvoid.nvim'
-    -- Git integration plugin
-    use 'tpope/vim-fugitive'
+    
+    -- ColorSchemes (lazy load on event like ColorScheme)
+    use {'aliqyan-21/darkvoid.nvim', event = "VimEnter"}
+    use {'EdenEast/nightfox.nvim', event = "VimEnter"}
 
-    -- Git signs in the gutter (e.g., added, modified, removed lines)
+    -- Git integration (lazy load on Git commands)
+    use {'tpope/vim-fugitive', cmd = { 'Git', 'G' }}
+
+    -- Gitsigns (lazy load on buffer event)
     use {
         'lewis6991/gitsigns.nvim',
+        event = "BufRead",
         requires = { 'nvim-lua/plenary.nvim' },
         config = function()
-            require('gitsigns').setup({
-            })
+            require('gitsigns').setup({})
         end
     }
-    -- LSP Config for setting up language servers
-    use 'neovim/nvim-lspconfig'
 
-    -- Autocompletion framework
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-nvim-lsp'
+    -- LSP Config (lazy load on specific commands)
+    use {'neovim/nvim-lspconfig', event = "BufReadPre"}
+    use {'williamboman/mason.nvim', cmd = "Mason"}
+    use {'williamboman/mason-lspconfig.nvim', after = 'mason.nvim'}
 
-    -- Snippet engine and snippets
-    use 'L3MON4D3/LuaSnip'
-    use 'saadparwaiz1/cmp_luasnip'
+    -- Autocompletion
+    use {'hrsh7th/nvim-cmp', event = "InsertEnter"}
+    use {'hrsh7th/cmp-nvim-lsp', after = 'nvim-cmp'}
+    use {'L3MON4D3/LuaSnip', event = "InsertEnter"}
+    use {'saadparwaiz1/cmp_luasnip', after = 'LuaSnip'}
 
-    -- Language-specific server install helpers (mason.nvim)
-    use 'williamboman/mason.nvim'
-    use 'williamboman/mason-lspconfig.nvim'
-
-    -- Treesitter for better syntax highlighting
+    -- Treesitter (lazy load on file type)
     use {
         'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
+        run = ':TSUpdate',
+        event = "BufRead",
+        config = function()
+            require('nvim-treesitter.configs').setup {
+                highlight = {
+                    enable = true,
+                    additional_vim_regex_highlighting = false,
+                }
+            }
+        end
     }
-    -- Markdown Preview
-    use { 'ellisonleao/glow.nvim' }
-    -- Null-ls for integrating linters and formatters
-    use 'jose-elias-alvarez/null-ls.nvim'
-use {
-  "nvim-neo-tree/neo-tree.nvim",
-  branch = "v3.x",
-  requires = {
-    "nvim-lua/plenary.nvim",          -- Required dependency
-    "nvim-tree/nvim-web-devicons",    -- For file icons
-    "MunifTanjim/nui.nvim",           -- UI components for Neo-tree
-  },
-}
+
+    -- Markdown preview (lazy load on specific command)
+    use { 'ellisonleao/glow.nvim', cmd = "Glow" }
+
+    -- Null-ls (lazy load for linting/formatting)
+    use {'jose-elias-alvarez/null-ls.nvim', event = "BufReadPre"}
+
+    -- Neo-tree (lazy load when file explorer is opened)
+    use {
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
+        cmd = "Neotree",
+        requires = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "MunifTanjim/nui.nvim",
+        }
+    }
 end)
 -- Set ColorScheme
-vim.cmd [[colorscheme darkvoid]]
+vim.cmd [[colorscheme vim]]
 vim.g.mapleader = ' '
 -- Highlight the current line
 vim.wo.cursorline = true
@@ -219,7 +235,7 @@ require("neo-tree").setup({
       hide_dotfiles = false,    -- Show dotfiles by default (NERDTree-like)
       hide_gitignored = false,  -- Show Git ignored files
     },
-    follow_current_file = true, -- Focus on current file when opening Neo-tree
+    follow_current_file_enabled = true, -- Focus on current file when opening Neo-tree
     use_libuv_file_watcher = true, -- Asynchronous file updates
   },
   window = {
