@@ -131,7 +131,7 @@ export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
 
 # Add local bin to PATH if needed
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:/home/liberis/.cargo/bin:$PATH"
 # Function to parse Git branch
 parse_git_branch() {
     local branch
@@ -175,7 +175,24 @@ PS1+="\n${WHITE}\\$ ${RESET}"
 
 # Export the PS1
 export PS1
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
+ # Installing bash completion on Linux
+  ## If bash-completion is not installed on Linux, install the 'bash-completion' package
+  ## via your distribution's package manager.
+  ## Load the kubectl completion code for bash into the current shell
+  source <(kubectl completion bash)
+  ## Write bash completion code to a file and source it from .bash_profile
+  kubectl completion bash > ~/.kube/completion.bash.inc
+  printf "
+  # kubectl shell completion
+  source '$HOME/.kube/completion.bash.inc'
+  " >> $HOME/.bash_profile
+  source $HOME/.bash_profile
+
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias k=kubectl
+complete -o default -F __start_kubectl k
