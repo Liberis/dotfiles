@@ -1,6 +1,14 @@
 local opt = vim.opt
 
+-- Set leader key to space in Lua
 vim.g.mapleader = " "
+
+-- Disable space from moving the cursor in Visual Mode
+vim.api.nvim_set_keymap('x', '<Space>', '<Nop>', { noremap = true, silent = true })
+
+-- Make space work as leader key in Visual Mode
+vim.api.nvim_set_keymap('v', '<Space>', '<Leader>', { noremap = true, silent = true })
+
 -- Enable true color support
 opt.termguicolors = true
 
@@ -37,7 +45,12 @@ opt.cursorline = true
 
 -- Enable syntax highlighting
 vim.cmd('syntax on')
-
+-- Treesitter
+-- Set folding method to expr for Tree-sitter folding
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldenable = true -- Enable folding by default
+vim.opt.foldenable = false
 -- Diagnostics
 vim.diagnostic.config({
     virtual_text = true, -- Show inline errors

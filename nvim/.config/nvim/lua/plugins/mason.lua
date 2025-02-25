@@ -1,0 +1,68 @@
+return {
+  -- Mason: Auto-installs LSP, formatters, and linters
+  {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end
+  },
+
+  -- Mason-LSPConfig: Auto-configures LSP servers dynamically
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "neovim/nvim-lspconfig" },
+    config = function()
+      require("mason-lspconfig").setup({})
+
+      local lspconfig = require("lspconfig")
+
+      -- Automatically configure all installed LSP servers
+      require("mason-lspconfig").setup_handlers({
+        function(server_name)
+          lspconfig[server_name].setup({})
+        end
+      })
+    end
+  },
+
+  -- Mason-Null-LS: Fully Dynamic Detection of Installed Formatters & Linters
+  {
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = { "jose-elias-alvarez/null-ls.nvim" },
+    config = function()
+      local null_ls = require("null-ls")
+      local mason_registry = require("mason-registry")
+
+      -- Get all installed Mason packages
+      local installed_packages = mason_registry.get_installed_packages()
+
+      -- Extract package names for quick lookup
+      local installed_names = {}
+      for _, package in ipairs(installed_packages) do
+        installed_names[package.name] = true
+      end
+
+      -- Filter only installed formatters & linters
+      local sources = {}
+
+      -- Check installed formatters
+      for name, builtin in pairs(null_ls.builtins.formatting) do
+        if installed_names[name] then
+          table.insert(sources, builtin)
+        end
+      end
+
+      -- Check installed linters
+      for name, builtin in pairs(null_ls.builtins.diagnostics) do
+        if installed_names[name] then
+          table.insert(sources, builtin)
+        end
+      end
+
+      -- Set up Null-LS with dynamically detected sources
+      null_ls.setup({ sources = sources })
+    end
+  }
+}
+
