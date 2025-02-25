@@ -58,8 +58,9 @@ wk.add({
     { "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", desc = "Next Diagnostic" },
 
     -- ≡ƒôé File Explorer (NeoTree)
-    { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle File Explorer" },
-
+    { "<leader>e", "<cmd>neotree toggle<cr>", desc = "toggle file explorer" },
+    { "<leader>yf", "<cmd>Yazi<CR>", desc = "Toggle Yazi" },
+    { "<leader>yp", "<cmd>YaziPicker<CR>", desc = "Toggle Yazi Picker" },
     -- ≡ƒÅá Window Management
     { "<leader>w", group = "Window" },
     { "<leader>wv", "<cmd>vsplit<CR>", desc = "Vertical Split" },

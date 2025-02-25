@@ -10,6 +10,7 @@ return {
   -- Mason-LSPConfig: Auto-configures LSP servers dynamically
   {
     "williamboman/mason-lspconfig.nvim",
+    event = { "BufReadPost", "BufNewFile" },
     dependencies = { "neovim/nvim-lspconfig" },
     config = function()
       require("mason-lspconfig").setup({})

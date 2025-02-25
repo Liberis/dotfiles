@@ -99,6 +99,15 @@ alias gcl='git clone'
 # Tmux alias
 alias t='tmux'
 alias ranger='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'
+yazi_cd() {
+    local tmp_file="/tmp/yazi-last-dir"
+    yazi --cwd-file="$tmp_file"
+    if [ -f "$tmp_file" ]; then
+        cd "$(cat "$tmp_file")" || return
+    fi
+}
+alias yazi=yazi_cd
+alias ranger=yazi_cd
 # Function to extract archives
 extract() {
     if [ -f "$1" ] ; then
@@ -178,3 +187,4 @@ export PS1
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "$HOME/.cargo/env"

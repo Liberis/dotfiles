@@ -1,3 +1,5 @@
+vim.g.start_time = vim.loop.hrtime()  -- Capture startup time at the beginning
+
 return {
     "goolord/alpha-nvim",
     event = "VimEnter",
@@ -50,9 +52,19 @@ return {
             dashboard.button("c", "Nvim Config", ":e ~/.config/nvim/init.lua<CR>"),
             dashboard.button("q", "Quit Neovim", ":qa<CR>"),
         }
+        -- Calculate Startup Time
+        local startup_time = (vim.loop.hrtime() - vim.g.start_time) / 1e6  -- Convert to milliseconds
 
+        -- Get Number of Loaded Plugins (for lazy.nvim)
+        local plugin_count = 0
+        if pcall(require, "lazy") then
+            plugin_count = require("lazy").stats().loaded
+        end
+
+        -- Footer with Startup Time and Plugin Count
+        dashboard.section.footer.val = { 
+            "Loaded in " .. string.format("%.2f", startup_time) .. " ms " .. plugin_count .. " plugins"}
         -- Footer
-        dashboard.section.footer.val = { "🚀 Keep Calm and Stay Lucky 🚀" }
 
         -- Set up Alpha dashboard
         alpha.setup(dashboard.opts)
