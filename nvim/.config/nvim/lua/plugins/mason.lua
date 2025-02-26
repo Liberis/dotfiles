@@ -10,7 +10,7 @@ return {
   -- Mason-LSPConfig: Auto-configures LSP servers dynamically
   {
     "williamboman/mason-lspconfig.nvim",
-    event = { "BufReadPost", "BufNewFile" },
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = { "neovim/nvim-lspconfig" },
     config = function()
       require("mason-lspconfig").setup({})
@@ -20,8 +20,22 @@ return {
       -- Automatically configure all installed LSP servers
       require("mason-lspconfig").setup_handlers({
         function(server_name)
-          lspconfig[server_name].setup({})
+          lspconfig[server_name].setup({
+            on_attach = function(client, bufnr)
+              print("LSP started for " .. vim.bo.filetype)
+            end,
+          })
         end
+      })
+
+      -- Ensure LSP starts automatically when opening a file
+      vim.api.nvim_create_autocmd("BufReadPost", {
+        callback = function()
+          local clients = vim.lsp.get_active_clients()
+          if #clients == 0 then
+            vim.cmd("LspStart")
+          end
+        end,
       })
     end
   },

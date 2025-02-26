@@ -19,8 +19,3 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
     callback = function() vim.opt.cmdheight = 0 end,
 })
 
--- Open files in tabs when multiple
-vim.api.nvim_create_autocmd("VimEnter", {
-  pattern = "*",
-  command = "if argc() > 1 | tab all | endif",
-})

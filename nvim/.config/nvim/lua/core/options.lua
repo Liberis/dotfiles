@@ -11,7 +11,7 @@ vim.api.nvim_set_keymap('v', '<Space>', '<Leader>', { noremap = true, silent = t
 
 -- Enable true color support
 opt.termguicolors = true
-
+vim.o.confirm = false
 -- Enable line numbers
 opt.number = true
 opt.relativenumber = false
@@ -60,3 +60,4 @@ vim.diagnostic.config({
     severity_sort = true, -- Show severe errors first
 })
 vim.keymap.del("n", "gcc")
+
