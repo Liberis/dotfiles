@@ -17,7 +17,15 @@ export HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
 PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
-# Function to parse Git branch
+# Check if inside tmux, if not attach or start a session
+if [ -z "$TMUX" ]; then
+    if [ $(tmux has-session -t liberis 2>/dev/null) -eq 0 ]; then
+        tmux attach -t liberis
+    else
+        tmux new-session -s liberis 
+    fi
+fi
+
 
 # Prompt customization with Git branch
 
