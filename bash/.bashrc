@@ -10,6 +10,48 @@ elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
+tmux_session() {
+    SESSION_NAME="session"
+
+    if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        # Define windows in the format "window_name:command"
+        # Leave command empty if you want a plain shell.
+        windows=(
+            "term:clear"
+            "nvim:nvim"
+            "yazi:yazi"
+            "k8s:k9s"
+            "logs:"
+            "git:"
+            "htop:htop"
+            "azdotui:azdotui"
+        )
+
+    # Create the first window using new-session.
+    IFS=':' read -r first_win first_cmd <<< "${windows[0]}"
+    if [ -n "$first_cmd" ]; then
+        tmux new-session -d -s "$SESSION_NAME" -n "$first_win" "$SHELL" -c "$first_cmd; clear; exec $SHELL"
+    else
+        tmux new-session -d -s "$SESSION_NAME" -n "$first_win"
+    fi
+
+    # Iterate over the remaining window definitions.
+    for win in "${windows[@]:1}"; do
+        IFS=':' read -r win_name win_cmd <<< "$win"
+        if [ -n "$win_cmd" ]; then
+            tmux new-window -t "$SESSION_NAME" -n "$win_name" "$SHELL" -c "$win_cmd; clear; exec $SHELL"
+        else
+            tmux new-window -t "$SESSION_NAME" -n "$win_name"
+        fi
+    done
+    fi
+
+    tmux select-window -t "$SESSION_NAME:term"
+    tmux attach-session -t "$SESSION_NAME"
+}
+
+
+
 # History settings
 export HISTSIZE=10000
 export HISTFILESIZE=20000
@@ -18,20 +60,10 @@ shopt -s histappend
 PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
 # Check if inside tmux, if not attach or start a session
-if [ -z "$TMUX" ]; then
-    if tmux has-session -t liberis 2>/dev/null; then
-        tmux attach -t liberis
-    else
-        tmux new-session -s liberis 
-    fi
-fi
-
-
-# Prompt customization with Git branch
-
 # Environment variables
 export EDITOR='nvim'
 export VISUAL='nvim'
+
 
 # Alias definitions
 alias vi='nvim'
@@ -105,6 +137,7 @@ alias gss='git status -s'
 alias gcl='git clone'
 
 # Tmux alias
+alias tmux='tmux_session'
 alias t='tmux'
 alias ranger='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'
 yazi_cd() {
@@ -192,3 +225,14 @@ PS1+="\n${WHITE}\\$ ${RESET}"
 
 # Export the PS1
 export PS1
+
+if [ -z "$TMUX" ]; then
+    # Only run session creation if no tmux session is active.
+    if ! tmux has-session -t session 2>/dev/null; then
+        tmux_session
+    else
+        tmux attach -t session
+    fi
+fi
+
+
