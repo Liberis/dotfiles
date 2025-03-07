@@ -59,5 +59,4 @@ vim.diagnostic.config({
     update_in_insert = false, -- Don't update while typing
     severity_sort = true, -- Show severe errors first
 })
-vim.keymap.del("n", "gcc")
 
